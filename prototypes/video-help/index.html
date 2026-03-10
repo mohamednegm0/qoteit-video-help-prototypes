@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كوت إت - نماذج مساعدة الفيديو</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        body { background: var(--bg-main); }
+
+        /* Hero */
+        .proto-hero {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #16213e 100%);
+            padding: 56px 30px 48px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .proto-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -15%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(18,126,227,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .proto-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(73,179,201,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .proto-hero-logo {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        .proto-hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .proto-hero p {
+            font-size: 16px;
+            opacity: 0.7;
+            max-width: 520px;
+            margin: 0 auto 24px;
+            line-height: 1.8;
+            position: relative;
+        }
+        .proto-meta {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            position: relative;
+        }
+        .proto-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            opacity: 0.65;
+        }
+        .proto-meta-item i { color: #49B3C9; opacity: 1; }
+
+        /* Grid */
+        .proto-grid-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px 60px;
+        }
+        .proto-grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .proto-grid-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .proto-count {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .proto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* Prototype Card */
+        .proto-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: transform 0.25s, box-shadow 0.25s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .proto-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+        }
+
+        .proto-card-preview {
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .proto-card-preview .preview-icon {
+            font-size: 48px;
+            opacity: 0.12;
+            position: absolute;
+        }
+        .proto-card-preview .preview-main-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .proto-card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .proto-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .proto-card-body h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .proto-card-body p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .proto-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .proto-tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #F4F6F9;
+            color: var(--text-secondary);
+        }
+        .proto-tag.best   { background: #E6F7F5; color: #009688; }
+        .proto-tag.new-u  { background: #FFF3E0; color: #F3A73D; }
+        .proto-tag.power  { background: #EDE7F6; color: #8161C2; }
+        .proto-tag.mobile { background: #E3F2FD; color: #127EE3; }
+
+        .proto-card-footer {
+            padding: 0 20px 20px;
+        }
+        .proto-open-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 11px 0;
+            border-radius: 8px;
+            background: #127EE3;
+            color: #fff;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .proto-open-btn:hover { background: #0d6bd0; }
+
+        /* Recommendation banner */
+        .proto-rec-banner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+        .rec-card {
+            background: linear-gradient(135deg, #E6F7F5, #E6F0FF);
+            border: 1px solid #B3D4FF;
+            border-radius: 14px;
+            padding: 24px 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .rec-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #127EE3;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .rec-content h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .rec-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .rec-content strong { color: #127EE3; }
+
+        /* Footer */
+        .proto-footer {
+            text-align: center;
+            padding: 24px 30px 32px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .proto-hero { padding: 40px 20px 36px; }
+            .proto-hero h1 { font-size: 24px; }
+            .proto-grid { grid-template-columns: 1fr; }
+            .proto-grid-container { padding: 24px 16px 40px; }
+            .proto-meta { gap: 16px; flex-wrap: wrap; }
+            .rec-card { flex-direction: column; }
+            .proto-rec-banner { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <section class="proto-hero">
+        <div class="proto-hero-logo">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="160px" height="43px" viewBox="0 0 235 64.414" enable-background="new 0 0 235 64.414" xml:space="preserve">
+                <g id="Background_xA0_Image_1_"><g><polygon fill="#49B3C9" points="49.374,14.641 35.4,31.487 21.798,22.957 5.114,43.178 20.946,17.665 34.882,27.311 46.565,12.442"/><path fill="#49B3C9" d="M63.48,3.814l-16.916,8.628L34.882,27.311l-13.936-9.646L5.114,43.178c-1.37-3.402-2.13-7.106-2.13-10.996c0-16.271,13.189-29.461,29.457-29.461c6.316,0,12.166,1.988,16.962,5.375L63.48,3.814z"/><path fill="#8DA0BF" d="M59.107,22.341L38.215,44.874L22.038,35.58L6.808,46.73c-0.039-0.059-0.069-0.119-0.105-0.181L22.4,30.487l15.117,10.645L56.421,20.23L59.107,22.341z"/><path fill="#A0B4D0" d="M67.026,57.925l-9.982,3.984L43.81,59.42c-3.501,1.458-7.333,2.271-11.368,2.271c-10.99,0-20.581-6.031-25.633-14.961l15.23-11.15l16.177,9.294l20.892-22.532L63.48,3.865l-2.445,21.247c0.57,2.283,0.872,4.667,0.872,7.122c0,7.085-2.507,13.58-6.669,18.662l0.073,0.032l-3.499,2.104L67.026,57.925z"/><polygon fill="#8DA0BF" points="69.721,56.85 67.026,57.925 51.813,53.032 55.311,50.928 65.258,55.013"/></g></g>
+                <g id="QOTE"><g><path fill="#FFFFFF" d="M78.124,42.693V21.794c0-4.946,1.27-8.574,3.808-10.889s5.943-3.473,10.214-3.473c4.269,0,7.675,1.158,10.215,3.473c2.537,2.315,3.81,5.943,3.81,10.889v20.899c0,4.629-1.103,8.114-3.305,10.447c-2.203,2.341-5.192,3.645-8.967,3.913v5.43c0,0.549-0.168,0.97-0.506,1.271c-0.336,0.297-0.731,0.447-1.18,0.447c-0.495,0-0.909-0.15-1.247-0.447c-0.337-0.301-0.505-0.722-0.505-1.271v-5.43c-3.82-0.269-6.834-1.561-9.034-3.875C79.225,50.863,78.124,47.366,78.124,42.693z M82.574,42.794c0,6.176,2.628,9.56,7.888,10.145v-5.09c0-1.101,0.582-1.651,1.751-1.651c1.124,0,1.686,0.551,1.686,1.651v5.09c5.212-0.63,7.821-4.013,7.821-10.145V21.826c0-6.853-3.19-10.281-9.574-10.281c-6.381,0-9.572,3.428-9.572,10.281V42.794z"/><path fill="#FFFFFF" d="M111.964,42.693V21.794c0-4.946,1.271-8.574,3.81-10.889c2.538-2.315,5.946-3.473,10.214-3.473c4.269,0,7.677,1.158,10.215,3.473c2.539,2.315,3.81,5.943,3.81,10.889v20.899c0,4.989-1.271,8.642-3.81,10.956c-2.538,2.315-5.946,3.473-10.215,3.473c-4.268,0-7.676-1.157-10.214-3.473C113.235,51.334,111.964,47.682,111.964,42.693z M116.416,42.693c0,6.875,3.188,10.314,9.572,10.314c6.381,0,9.573-3.439,9.573-10.314V21.794c0-6.832-3.192-10.25-9.573-10.25c-6.385,0-9.572,3.417-9.572,10.25V42.693z"/><path fill="#FFFFFF" d="M141.087,9.489c0-0.532,0.147-1.007,0.44-1.428c0.292-0.417,0.706-0.629,1.246-0.629h27.032c0.54,0,0.955,0.199,1.251,0.597c0.288,0.398,0.436,0.864,0.436,1.394c0,0.574-0.147,1.074-0.436,1.492c-0.296,0.42-0.711,0.629-1.251,0.629h-11.257V54.96c0,0.54-0.225,0.968-0.675,1.284c-0.447,0.313-0.967,0.471-1.547,0.471c-0.634,0-1.162-0.158-1.588-0.471c-0.428-0.316-0.639-0.744-0.639-1.284V11.544h-11.327c-0.496,0-0.902-0.197-1.215-0.595C141.247,10.552,141.087,10.064,141.087,9.489z"/><path fill="#FFFFFF" d="M174.257,54.96V9.118c0-0.538,0.2-0.955,0.605-1.247c0.406-0.292,0.878-0.438,1.418-0.438h23.999c1.125,0,1.685,0.652,1.685,1.956c0,0.585-0.146,1.09-0.438,1.518c-0.292,0.428-0.706,0.639-1.246,0.639h-21.574v18.54h10.584c0.539,0,0.953,0.193,1.246,0.573c0.293,0.384,0.438,0.866,0.438,1.45c0,1.213-0.56,1.821-1.685,1.821h-10.584v18.672h21.574c0.496,0,0.897,0.203,1.215,0.609c0.313,0.401,0.47,0.897,0.47,1.483c0,1.348-0.56,2.021-1.685,2.021h-23.999c-0.54,0-1.012-0.158-1.418-0.471C174.458,55.931,174.257,55.5,174.257,54.96z"/></g></g>
+                <g id="it"><g><path fill="#90A4AE" d="M208.659,13.662c-0.578-0.554-0.866-1.208-0.866-1.963c0-0.754,0.288-1.398,0.866-1.93c0.576-0.531,1.287-0.8,2.127-0.8c0.801,0,1.475,0.269,2.031,0.8c0.557,0.532,0.832,1.176,0.832,1.93c0,0.755-0.275,1.409-0.832,1.963c-0.557,0.555-1.23,0.831-2.031,0.831C209.946,14.493,209.235,14.217,208.659,13.662z M208.659,53.551V25.406c0-0.443,0.198-0.82,0.601-1.131c0.398-0.31,0.905-0.466,1.526-0.466c0.622,0,1.146,0.156,1.568,0.466c0.419,0.311,0.63,0.688,0.63,1.131v28.145c0,0.443-0.224,0.845-0.666,1.198c-0.443,0.354-0.955,0.532-1.532,0.532c-0.576,0-1.071-0.179-1.493-0.532C208.87,54.396,208.659,53.995,208.659,53.551z"/><path fill="#90A4AE" d="M217.906,45.515V10.499c0-0.443,0.224-0.818,0.666-1.129c0.443-0.309,0.935-0.465,1.467-0.465c0.576,0,1.084,0.154,1.53,0.462c0.442,0.311,0.662,0.685,0.662,1.127v13.314h8.586c0.442,0,0.808,0.182,1.096,0.543c0.29,0.361,0.436,0.79,0.436,1.288s-0.146,0.925-0.436,1.288c-0.288,0.361-0.653,0.542-1.096,0.542h-8.586v17.95c0,2.155,0.455,3.661,1.365,4.52c0.91,0.856,2.518,1.286,4.824,1.286h1.865c0.576,0,1.051,0.195,1.429,0.585s0.564,0.856,0.564,1.409c0,0.554-0.187,1.032-0.564,1.446c-0.378,0.409-0.853,0.617-1.429,0.617h-1.865C221.411,55.282,217.906,52.024,217.906,45.515z"/></g></g>
+            </svg>
+        </div>
+        <h1>نماذج نظام المساعدة بالفيديو</h1>
+        <p>٧ أساليب مختلفة لعرض الفيديوهات التعليمية داخل التطبيق — اختر الأنسب لتجربة المستخدم</p>
+        <div class="proto-meta">
+            <span class="proto-meta-item"><i class="fa-solid fa-layer-group"></i> 7 نماذج</span>
+            <span class="proto-meta-item"><i class="fa-solid fa-video"></i> 9 فيديوهات تعليمية</span>
+            <span class="proto-meta-item"><i class="fa-solid fa-calendar"></i> مارس 2026</span>
+        </div>
+    </section>
+
+    <!-- Recommendation Banner -->
+    <div class="proto-grid-container" style="padding-bottom: 0;">
+        <div class="rec-card">
+            <div class="rec-icon"><i class="fa-solid fa-star"></i></div>
+            <div class="rec-content">
+                <h3>💡 التوصية: اجمع بين A + E</h3>
+                <p>استخدم <strong>معالج التعلّم (E)</strong> للمستخدمين الجدد عند أول استخدام، ثم <strong>الويدجت العائم (A)</strong> كمساعد دائم. أضف <strong>مركز المساعدة (B)</strong> كصفحة مستقلة لاحقًا.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prototype Cards Grid -->
+    <div class="proto-grid-container" style="padding-top: 0;">
+        <div class="proto-grid-header">
+            <h2>جميع النماذج</h2>
+            <span class="proto-count">اضغط على أي نموذج لتجربته</span>
+        </div>
+        <div class="proto-grid">
+
+            <!-- A -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #e8f4fd, #d1ecf9);">
+                    <i class="fa-solid fa-comment-dots preview-icon" style="color: #127EE3;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #127EE3, #49B3C9);"><i class="fa-solid fa-circle-question"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج A</span>
+                    <h3>ويدجت عائم (Intercom-style)</h3>
+                    <p>زر دائري عائم يفتح لوحة جانبية فيها بحث وتصنيفات — غير مُقاطع، مثل Zendesk أو Intercom.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag best">⭐ الأنسب للاستخدام اليومي</span>
+                        <span class="proto-tag">مستخدم عائد</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-a.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- B -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #e0f2f1, #b2dfdb);">
+                    <i class="fa-solid fa-graduation-cap preview-icon" style="color: #009688;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #009688, #49B3C9);"><i class="fa-solid fa-book-open"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج B</span>
+                    <h3>مركز المساعدة الكامل</h3>
+                    <p>صفحة مستقلة بتصميم غني — بحث، شبكة بطاقات فيديو، فلاتر تصنيفات، ومشغّل مع فيديوهات ذات صلة.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag best">⭐ الأفضل للتصفح</span>
+                        <span class="proto-tag">صفحة مستقلة</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-b.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- C -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #ede7f6, #d1c4e9);">
+                    <i class="fa-solid fa-columns preview-icon" style="color: #8161C2;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #8161C2, #B388FF);"><i class="fa-solid fa-tv"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج C</span>
+                    <h3>مشغّل جانبي (Course Player)</h3>
+                    <p>شاشة مقسومة — قائمة أكورديون على اليمين ومشغّل فيديو كبير على اليسار مع تتبع تقدم المشاهدة.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag">تعلّم متسلسل</span>
+                        <span class="proto-tag new-u">مستخدم جديد</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-c.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- D -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #fce4ec, #f8bbd0);">
+                    <i class="fa-solid fa-terminal preview-icon" style="color: #E91E63;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #E91E63, #FF5252);"><i class="fa-solid fa-magnifying-glass"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج D</span>
+                    <h3>لوحة البحث السريع (Ctrl+K)</h3>
+                    <p>اختصار لوحة مفاتيح يفتح لوحة بحث مركزية — نتائج فورية، تنقل بالأسهم، عمليات بحث أخيرة.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag power">⚡ مستخدم محترف</span>
+                        <span class="proto-tag">بحث سريع</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-d.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- E -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2);">
+                    <i class="fa-solid fa-wand-magic-sparkles preview-icon" style="color: #F3A73D;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #F3A73D, #FF9800);"><i class="fa-solid fa-rocket"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج E</span>
+                    <h3>معالج التعلّم التفاعلي (Wizard)</h3>
+                    <p>جولة خطوة بخطوة مع قائمة تحقق جانبية، نصائح، شاشة ترحيب، وتأثير احتفالي عند إكمال كل الدروس 🎉</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag best">⭐ الأفضل للمستخدم الجديد</span>
+                        <span class="proto-tag new-u">أول استخدام</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-e.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- F -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #1a1a2e, #16213e);">
+                    <i class="fa-brands fa-instagram preview-icon" style="color: #fff; opacity: 0.08;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #E040FB, #FF5252);"><i class="fa-solid fa-play"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج F</span>
+                    <h3>ستوريز (Instagram Stories)</h3>
+                    <p>حلقات قصص في أعلى الصفحة — اضغط لفتح مشغّل بملء الشاشة مع أشرطة تقدم وتنقل بالنقر.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag mobile">📱 الأفضل للجوال</span>
+                        <span class="proto-tag">عصري وجذاب</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-f.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+            <!-- G -->
+            <div class="proto-card">
+                <div class="proto-card-preview" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
+                    <i class="fa-solid fa-robot preview-icon" style="color: #127EE3;"></i>
+                    <div class="preview-main-icon" style="background: linear-gradient(135deg, #127EE3, #0d6bd0);"><i class="fa-solid fa-robot"></i></div>
+                </div>
+                <div class="proto-card-body">
+                    <span class="proto-card-label">النموذج G</span>
+                    <h3>مساعد ذكي (Chatbot)</h3>
+                    <p>فقاعة دردشة تفتح محادثة مع بوت — أزرار ردود سريعة، بطاقات فيديو داخل المحادثة، واقتراحات متابعة.</p>
+                    <div class="proto-card-tags">
+                        <span class="proto-tag">اكتشاف</span>
+                        <span class="proto-tag">محادثة تفاعلية</span>
+                    </div>
+                </div>
+                <div class="proto-card-footer">
+                    <a href="video-help-g.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="proto-footer">
+        <p>كوت إت 2026 © — نماذج أولية لمراجعة فريق المنتج</p>
+    </div>
+</body>
+</html>

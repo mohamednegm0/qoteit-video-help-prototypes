@@ -1,0 +1,13 @@
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Agents / IDE
+.agents/
+.gemini/
+*.code-workspace
+
+# Dev docs (not needed on GitHub Pages)
+pm_prototyping_guide.md
+qote_design_system.md

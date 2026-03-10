@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كوت إت - فيديوهات سريعة (ستوريز)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        /* ===== Stories-Style Video Viewer ===== */
+
+        /* Story circles section */
+        .stories-section {
+            padding: 24px 30px 0;
+        }
+        .stories-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stories-section-title i { color: var(--brand-primary); }
+
+        .stories-row {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+        }
+        .stories-row::-webkit-scrollbar { display: none; }
+
+        .story-circle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .story-ring {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, #127EE3, #49B3C9, #009688);
+            transition: transform 0.2s;
+        }
+        .story-ring:hover { transform: scale(1.08); }
+        .story-ring.watched {
+            background: #ccc;
+        }
+        .story-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--brand-primary);
+            border: 3px solid var(--bg-card);
+        }
+        .story-ring.watched .story-ring-inner {
+            color: var(--text-muted);
+        }
+        .story-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+            width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Full-screen story viewer */
+        .story-viewer {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .story-viewer.open { opacity: 1; pointer-events: all; }
+
+        /* Progress bars */
+        .story-progress-row {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            gap: 4px;
+            z-index: 10;
+        }
+        .story-progress-item {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .story-progress-item .fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .story-progress-item.completed .fill { width: 100%; }
+        .story-progress-item.active .fill { width: 50%; animation: progressFill 5s linear forwards; }
+        @keyframes progressFill {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Story header */
+        .story-header {
+            position: absolute;
+            top: 24px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .story-header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        .story-header-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #127EE3, #49B3C9);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #fff;
+        }
+        .story-header-text h4 { font-size: 13px; font-weight: 600; }
+        .story-header-text span { font-size: 11px; opacity: 0.7; }
+        .story-close-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .story-close-btn:hover { background: rgba(255,255,255,0.3); }
+
+        /* Story content */
+        .story-content {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 700px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-video-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .story-video-icon {
+            font-size: 60px;
+            color: rgba(255,255,255,0.12);
+            position: absolute;
+        }
+        .story-play-btn {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: rgba(18,126,227,0.85);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 24px rgba(18,126,227,0.4);
+        }
+        .story-play-btn:hover { transform: scale(1.1); }
+
+        /* Bottom gradient with title */
+        .story-bottom-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 60px 20px 24px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            z-index: 5;
+        }
+        .story-bottom-gradient h2 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .story-bottom-gradient p {
+            color: rgba(255,255,255,0.75);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .story-bottom-gradient .story-dur {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.1);
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        /* Navigation arrows */
+        .story-nav-area {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 35%;
+            z-index: 8;
+            cursor: pointer;
+        }
+        .story-nav-right { right: 0; }
+        .story-nav-left { left: 0; }
+
+        .story-nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .story-nav-area:hover .story-nav-arrow { opacity: 1; }
+        .story-nav-right .story-nav-arrow { left: 16px; }
+        .story-nav-left .story-nav-arrow { right: 16px; }
+
+        /* Category badge in story */
+        .story-cat-badge {
+            position: absolute;
+            top: 60px;
+            right: 16px;
+            background: rgba(18,126,227,0.8);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            z-index: 10;
+        }
+
+        /* "See all" link */
+        .stories-see-all {
+            font-size: 13px;
+            color: var(--brand-primary);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stories-see-all:hover { text-decoration: underline; }
+        .stories-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .demo-page-content { padding: 20px 0; }
+
+        @media (max-width: 768px) {
+            .stories-section { padding: 16px; }
+            .story-content { max-width: 100%; max-height: 100%; border-radius: 0; }
+            .stories-row { gap: 14px; }
+        }
+
+        @media (min-width: 769px) {
+            .story-viewer {
+                padding: 40px;
+            }
+            .story-content {
+                max-height: 85vh;
+                aspect-ratio: 9/16;
+                box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-right">
+            <div class="logo">
+                <a href="../../index.html" style="display: flex; align-items: center; text-decoration: none;">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="130px" height="35px" viewBox="0 0 235 64.414" enable-background="new 0 0 235 64.414" xml:space="preserve">
+                        <g id="Background_xA0_Image_1_"><g><polygon fill="#02695F" points="49.374,14.641 35.4,31.487 21.798,22.957 5.114,43.178 20.946,17.665 34.882,27.311 46.565,12.442"/><path fill="#038C7F" d="M63.48,3.814l-16.916,8.628L34.882,27.311l-13.936-9.646L5.114,43.178c-1.37-3.402-2.13-7.106-2.13-10.996c0-16.271,13.189-29.461,29.457-29.461c6.316,0,12.166,1.988,16.962,5.375L63.48,3.814z"/><path fill="#344669" d="M59.107,22.341L38.215,44.874L22.038,35.58L6.808,46.73c-0.039-0.059-0.069-0.119-0.105-0.181L22.4,30.487l15.117,10.645L56.421,20.23L59.107,22.341z"/><path fill="#455D8C" d="M67.026,57.925l-9.982,3.984L43.81,59.42c-3.501,1.458-7.333,2.271-11.368,2.271c-10.99,0-20.581-6.031-25.633-14.961l15.23-11.15l16.177,9.294l20.892-22.532L63.48,3.865l-2.445,21.247c0.57,2.283,0.872,4.667,0.872,7.122c0,7.085-2.507,13.58-6.669,18.662l0.073,0.032l-3.499,2.104L67.026,57.925z"/><polygon fill="#344669" points="69.721,56.85 67.026,57.925 51.813,53.032 55.311,50.928 65.258,55.013"/></g></g>
+                        <g id="QOTE"><g><path fill="#404040" d="M78.124,42.693V21.794c0-4.946,1.27-8.574,3.808-10.889s5.943-3.473,10.214-3.473c4.269,0,7.675,1.158,10.215,3.473c2.537,2.315,3.81,5.943,3.81,10.889v20.899c0,4.629-1.103,8.114-3.305,10.447c-2.203,2.341-5.192,3.645-8.967,3.913v5.43c0,0.549-0.168,0.97-0.506,1.271c-0.336,0.297-0.731,0.447-1.18,0.447c-0.495,0-0.909-0.15-1.247-0.447c-0.337-0.301-0.505-0.722-0.505-1.271v-5.43c-3.82-0.269-6.834-1.561-9.034-3.875C79.225,50.863,78.124,47.366,78.124,42.693z M82.574,42.794c0,6.176,2.628,9.56,7.888,10.145v-5.09c0-1.101,0.582-1.651,1.751-1.651c1.124,0,1.686,0.551,1.686,1.651v5.09c5.212-0.63,7.821-4.013,7.821-10.145V21.826c0-6.853-3.19-10.281-9.574-10.281c-6.381,0-9.572,3.428-9.572,10.281V42.794z"/><path fill="#404040" d="M111.964,42.693V21.794c0-4.946,1.271-8.574,3.81-10.889c2.538-2.315,5.946-3.473,10.214-3.473c4.269,0,7.677,1.158,10.215,3.473c2.539,2.315,3.81,5.943,3.81,10.889v20.899c0,4.989-1.271,8.642-3.81,10.956c-2.538,2.315-5.946,3.473-10.215,3.473c-4.268,0-7.676-1.157-10.214-3.473C113.235,51.334,111.964,47.682,111.964,42.693z M116.416,42.693c0,6.875,3.188,10.314,9.572,10.314c6.381,0,9.573-3.439,9.573-10.314V21.794c0-6.832-3.192-10.25-9.573-10.25c-6.385,0-9.572,3.417-9.572,10.25V42.693z"/><path fill="#404040" d="M141.087,9.489c0-0.532,0.147-1.007,0.44-1.428c0.292-0.417,0.706-0.629,1.246-0.629h27.032c0.54,0,0.955,0.199,1.251,0.597c0.288,0.398,0.436,0.864,0.436,1.394c0,0.574-0.147,1.074-0.436,1.492c-0.296,0.42-0.711,0.629-1.251,0.629h-11.257V54.96c0,0.54-0.225,0.968-0.675,1.284c-0.447,0.313-0.967,0.471-1.547,0.471c-0.634,0-1.162-0.158-1.588-0.471c-0.428-0.316-0.639-0.744-0.639-1.284V11.544h-11.327c-0.496,0-0.902-0.197-1.215-0.595C141.247,10.552,141.087,10.064,141.087,9.489z"/><path fill="#404040" d="M174.257,54.96V9.118c0-0.538,0.2-0.955,0.605-1.247c0.406-0.292,0.878-0.438,1.418-0.438h23.999c1.125,0,1.685,0.652,1.685,1.956c0,0.585-0.146,1.09-0.438,1.518c-0.292,0.428-0.706,0.639-1.246,0.639h-21.574v18.54h10.584c0.539,0,0.953,0.193,1.246,0.573c0.293,0.384,0.438,0.866,0.438,1.45c0,1.213-0.56,1.821-1.685,1.821h-10.584v18.672h21.574c0.496,0,0.897,0.203,1.215,0.609c0.313,0.401,0.47,0.897,0.47,1.483c0,1.348-0.56,2.021-1.685,2.021h-23.999c-0.54,0-1.012-0.158-1.418-0.471C174.458,55.931,174.257,55.5,174.257,54.96z"/></g></g>
+                        <g id="it"><g><path fill="#727272" d="M208.659,13.662c-0.578-0.554-0.866-1.208-0.866-1.963c0-0.754,0.288-1.398,0.866-1.93c0.576-0.531,1.287-0.8,2.127-0.8c0.801,0,1.475,0.269,2.031,0.8c0.557,0.532,0.832,1.176,0.832,1.93c0,0.755-0.275,1.409-0.832,1.963c-0.557,0.555-1.23,0.831-2.031,0.831C209.946,14.493,209.235,14.217,208.659,13.662z M208.659,53.551V25.406c0-0.443,0.198-0.82,0.601-1.131c0.398-0.31,0.905-0.466,1.526-0.466c0.622,0,1.146,0.156,1.568,0.466c0.419,0.311,0.63,0.688,0.63,1.131v28.145c0,0.443-0.224,0.845-0.666,1.198c-0.443,0.354-0.955,0.532-1.532,0.532c-0.576,0-1.071-0.179-1.493-0.532C208.87,54.396,208.659,53.995,208.659,53.551z"/><path fill="#727272" d="M217.906,45.515V10.499c0-0.443,0.224-0.818,0.666-1.129c0.443-0.309,0.935-0.465,1.467-0.465c0.576,0,1.084,0.154,1.53,0.462c0.442,0.311,0.662,0.685,0.662,1.127v13.314h8.586c0.442,0,0.808,0.182,1.096,0.543c0.29,0.361,0.436,0.79,0.436,1.288s-0.146,0.925-0.436,1.288c-0.288,0.361-0.653,0.542-1.096,0.542h-8.586v17.95c0,2.155,0.455,3.661,1.365,4.52c0.91,0.856,2.518,1.286,4.824,1.286h1.865c0.576,0,1.051,0.195,1.429,0.585s0.564,0.856,0.564,1.409c0,0.554-0.187,1.032-0.564,1.446c-0.378,0.409-0.853,0.617-1.429,0.617h-1.865C221.411,55.282,217.906,52.024,217.906,45.515z"/></g></g>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li class="active"><a href="../../index.html"><i class="fa-solid fa-house"></i> البداية</a></li>
+                <li><a href="../../quotations.html"><i class="fa-solid fa-file-invoice-dollar"></i> التسعيرات</a></li>
+                <li><a href="#"><i class="fa-solid fa-file-contract"></i> العروض</a></li>
+                <li><a href="../../clients.html"><i class="fa-solid fa-users"></i> العملاء</a></li>
+                <li><a href="#"><i class="fa-solid fa-boxes-stacked"></i> المنتجات</a></li>
+                <li><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i> الإعدادات</a></li>
+            </ul>
+        </div>
+        <div class="nav-left">
+            <div style="font-size: 18px; color: var(--brand-teal); font-weight: 500; cursor: pointer; display: flex; align-items: center; margin-left: 8px;">ع</div>
+            <div class="notifications"><i class="fa-regular fa-bell"></i><span class="badge">165</span></div>
+            <div class="user-profile">
+                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Maya&background=random" alt="user"></div>
+                <span class="username">maya</span>
+            </div>
+            <div class="logout"><i class="fa-solid fa-arrow-right-from-bracket" style="transform: scaleX(-1);"></i></div>
+        </div>
+    </nav>
+
+    <!-- Main Page Content -->
+    <main class="dashboard-container">
+        <!-- Story circles -->
+        <section class="stories-section" style="padding-top:24px;">
+            <div class="stories-title-row">
+                <h2 class="stories-section-title"><i class="fa-solid fa-play-circle"></i> دروس فيديو سريعة</h2>
+                <span class="stories-see-all">عرض الكل <i class="fa-solid fa-chevron-left"></i></span>
+            </div>
+            <div class="stories-row" id="storiesRow">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Demo page content -->
+        <div class="demo-page-content">
+            <h2 class="section-title">نظرة عامة</h2>
+            <div class="overview-grid">
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-gray"></div></div><div class="stat-info"><div class="stat-value">12</div><div class="stat-label">مسودة</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-orange"></div></div><div class="stat-info"><div class="stat-value">5</div><div class="stat-label">قيد المراجعة</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-blue"></div></div><div class="stat-info"><div class="stat-value">8</div><div class="stat-label">معتمد داخليا</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-purple"></div></div><div class="stat-info"><div class="stat-value">3</div><div class="stat-label">تم الإرسال</div></div></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Story Viewer -->
+    <div class="story-viewer" id="storyViewer">
+        <div class="story-content" id="storyContent">
+            <!-- Progress bars -->
+            <div class="story-progress-row" id="storyProgressRow"></div>
+
+            <!-- Header -->
+            <div class="story-header">
+                <div class="story-header-info">
+                    <div class="story-header-avatar"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div class="story-header-text">
+                        <h4>كوت إت</h4>
+                        <span id="storyCategory">العملاء</span>
+                    </div>
+                </div>
+                <button class="story-close-btn" onclick="closeStory()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <span class="story-cat-badge" id="storyCatBadge">العملاء</span>
+
+            <!-- Video area -->
+            <div class="story-video-area">
+                <i class="fa-solid fa-play story-video-icon" id="storyBgIcon"></i>
+                <div class="story-play-btn"><i class="fa-solid fa-play" style="margin-right: -3px;"></i></div>
+            </div>
+
+            <!-- Bottom gradient -->
+            <div class="story-bottom-gradient">
+                <h2 id="storyTitle">عنوان الفيديو</h2>
+                <p id="storyDesc">وصف الفيديو</p>
+                <span class="story-dur"><i class="fa-regular fa-clock"></i> <span id="storyDur">2:30</span></span>
+            </div>
+
+            <!-- Navigation areas -->
+            <div class="story-nav-area story-nav-right" onclick="nextStory()">
+                <div class="story-nav-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+            </div>
+            <div class="story-nav-area story-nav-left" onclick="prevStory()">
+                <div class="story-nav-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 12px;">
+        كوت إت 2026 ©
+    </div>
+
+    <script>
+        const stories = [
+            { id: 1, title: 'إضافة عميل', desc: 'تعلّم كيف تضيف عميل جديد', cat: 'العملاء', duration: '2:30', icon: 'fa-user-plus', watched: false },
+            { id: 2, title: 'إضافة عملاء من إكسل', desc: 'استورد عملاءك بالجملة من ملف', cat: 'العملاء', duration: '3:15', icon: 'fa-file-excel', watched: true },
+            { id: 3, title: 'إضافة منتج', desc: 'أضف منتجاتك وخدماتك', cat: 'المنتجات', duration: '2:45', icon: 'fa-box', watched: false },
+            { id: 4, title: 'إنشاء عرض سعر', desc: 'أنشئ عرض سعر احترافي', cat: 'التسعيرات', duration: '4:00', icon: 'fa-file-invoice-dollar', watched: false },
+            { id: 5, title: 'الإعداد وبدء الاستخدام', desc: 'ابدأ رحلتك مع كوت إت', cat: 'الإعدادات', duration: '5:20', icon: 'fa-rocket', watched: true },
+            { id: 6, title: 'إعدادات الضرائب', desc: 'تحكم في أنواع الضرائب', cat: 'الإعدادات', duration: '2:10', icon: 'fa-percent', watched: false },
+            { id: 7, title: 'الشروط والأحكام', desc: 'خصص شروط عروض الأسعار', cat: 'الإعدادات', duration: '1:55', icon: 'fa-file-contract', watched: true },
+            { id: 8, title: 'إضافة تصنيف', desc: 'نظّم منتجاتك بالتصنيفات', cat: 'المنتجات', duration: '1:40', icon: 'fa-tags', watched: false },
+            { id: 9, title: 'حقول مخصصة', desc: 'أضف حقول تناسب عملك', cat: 'الإعدادات', duration: '3:00', icon: 'fa-sliders', watched: false },
+        ];
+
+        let currentStoryIdx = 0;
+
+        function renderStoryCircles() {
+            const row = document.getElementById('storiesRow');
+            row.innerHTML = stories.map((s, i) => `
+                <div class="story-circle-wrap" onclick="openStory(${i})">
+                    <div class="story-ring ${s.watched ? 'watched' : ''}">
+                        <div class="story-ring-inner"><i class="fa-solid ${s.icon}"></i></div>
+                    </div>
+                    <span class="story-label">${s.title}</span>
+                </div>
+            `).join('');
+        }
+
+        function openStory(idx) {
+            currentStoryIdx = idx;
+            updateStory();
+            document.getElementById('storyViewer').classList.add('open');
+        }
+
+        function closeStory() {
+            document.getElementById('storyViewer').classList.remove('open');
+        }
+
+        function updateStory() {
+            const s = stories[currentStoryIdx];
+            document.getElementById('storyTitle').textContent = s.title;
+            document.getElementById('storyDesc').textContent = s.desc;
+            document.getElementById('storyDur').textContent = s.duration;
+            document.getElementById('storyCategory').textContent = s.cat;
+            document.getElementById('storyCatBadge').textContent = s.cat;
+            document.getElementById('storyBgIcon').className = 'fa-solid ' + s.icon + ' story-video-icon';
+
+            // Progress bars
+            const progressRow = document.getElementById('storyProgressRow');
+            progressRow.innerHTML = stories.map((_, i) => `
+                <div class="story-progress-item ${i < currentStoryIdx ? 'completed' : ''} ${i === currentStoryIdx ? 'active' : ''}">
+                    <div class="fill"></div>
+                </div>
+            `).join('');
+
+            // Mark as watched
+            stories[currentStoryIdx].watched = true;
+            renderStoryCircles();
+        }
+
+        function nextStory() {
+            if (currentStoryIdx < stories.length - 1) {
+                currentStoryIdx++;
+                updateStory();
+            } else {
+                closeStory();
+            }
+        }
+
+        function prevStory() {
+            if (currentStoryIdx > 0) {
+                currentStoryIdx--;
+                updateStory();
+            }
+        }
+
+        // Keyboard nav
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('storyViewer').classList.contains('open')) return;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                // In RTL, right = prev, left = next (visually)
+                if (e.key === 'ArrowLeft') nextStory();
+                else prevStory();
+            }
+            if (e.key === 'Escape') closeStory();
+        });
+
+        renderStoryCircles();
+    </script>
+</body>
+</html>

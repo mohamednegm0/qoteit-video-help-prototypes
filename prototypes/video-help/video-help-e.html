@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كوت إت - معالج التعلّم التفاعلي</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        /* ===== Onboarding Wizard ===== */
+        .wizard-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .wizard-overlay.open { opacity: 1; pointer-events: all; }
+
+        .wizard-container {
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+            transform: scale(0.95);
+            transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+        }
+        .wizard-overlay.open .wizard-container { transform: scale(1); }
+
+        /* Sidebar checklist */
+        .wizard-sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0d1b2a 0%, #1b2838 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+        .wizard-sb-header {
+            padding: 24px 20px 16px;
+        }
+        .wizard-sb-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .wizard-sb-header p {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        .wizard-sb-progress {
+            padding: 0 20px 16px;
+        }
+        .wizard-pb-bg {
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .wizard-pb-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #49B3C9, #127EE3);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        .wizard-pb-text {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 6px;
+        }
+
+        .wizard-steps-list {
+            flex: 1;
+            padding: 0 12px 16px;
+        }
+        .wizard-step-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-bottom: 2px;
+        }
+        .wizard-step-item:hover { background: rgba(255,255,255,0.08); }
+        .wizard-step-item.active { background: rgba(18,126,227,0.25); }
+
+        .ws-check {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: all 0.25s;
+        }
+        .wizard-step-item.completed .ws-check {
+            background: #009688;
+            border-color: #009688;
+        }
+        .wizard-step-item.active .ws-check {
+            border-color: #127EE3;
+            box-shadow: 0 0 0 3px rgba(18,126,227,0.3);
+        }
+        .ws-check-num {
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .ws-title {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        .wizard-step-item.completed .ws-title {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        /* Main content */
+        .wizard-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .wizard-main-top {
+            padding: 20px 24px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wizard-step-counter {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .wizard-step-counter strong {
+            color: var(--brand-primary);
+        }
+        .wizard-close {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .wizard-close:hover { background: #E2E5EC; }
+
+        .wizard-video-area {
+            margin: 0 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0d0d1a;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .wiz-play-btn {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: rgba(18,126,227,0.9);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 8px 32px rgba(18,126,227,0.4);
+        }
+        .wiz-play-btn:hover { transform: scale(1.1); }
+
+        .wizard-info {
+            padding: 24px;
+            flex: 1;
+        }
+        .wizard-info h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .wizard-info p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .wizard-tip {
+            background: #F0F7FF;
+            border: 1px solid #B3D4FF;
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .wizard-tip i {
+            color: #127EE3;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+        .wizard-tip span {
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .wizard-nav {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wiz-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .wiz-nav-btn:hover { border-color: #127EE3; color: #127EE3; }
+        .wiz-nav-btn.primary {
+            background: #127EE3;
+            color: white;
+            border-color: #127EE3;
+        }
+        .wiz-nav-btn.primary:hover { background: #0d6bd0; }
+        .wiz-nav-btn.success {
+            background: #009688;
+            color: white;
+            border-color: #009688;
+        }
+        .wiz-skip-btn {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .wiz-skip-btn:hover { color: var(--text-primary); }
+
+        /* Welcome screen */
+        .wizard-welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 40px;
+            flex: 1;
+        }
+        .wizard-welcome .welcome-icon {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #127EE3, #49B3C9);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 36px;
+            margin-bottom: 24px;
+        }
+        .wizard-welcome h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .wizard-welcome p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            line-height: 1.8;
+            margin-bottom: 32px;
+        }
+        .wizard-welcome .start-btn {
+            padding: 14px 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #127EE3, #0d6bd0);
+            color: #fff;
+            border: none;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(18,126,227,0.3);
+        }
+        .wizard-welcome .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(18,126,227,0.4);
+        }
+
+        /* Completion screen */
+        .wizard-complete {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 40px;
+            flex: 1;
+        }
+        .wizard-complete.show { display: flex; }
+        .wizard-complete .check-circle {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #009688, #49B3C9);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 40px;
+            margin-bottom: 24px;
+            animation: bounceIn 0.6s ease;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .wizard-complete h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #009688;
+        }
+        .wizard-complete p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+        .wizard-complete .done-btn {
+            padding: 12px 36px;
+            border-radius: 8px;
+            background: #009688;
+            color: #fff;
+            border: none;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Confetti */
+        .confetti-piece {
+            position: fixed;
+            z-index: 3000;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            pointer-events: none;
+            animation: confettiFall 3s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+        }
+
+        /* Welcome trigger button on page */
+        .start-wizard-btn {
+            position: fixed;
+            bottom: 32px;
+            left: 32px;
+            z-index: 50;
+            padding: 14px 28px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #127EE3, #49B3C9);
+            color: white;
+            border: none;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(18,126,227,0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .start-wizard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(18,126,227,0.45);
+        }
+
+        .wizard-content { display: none; flex-direction: column; flex: 1; }
+        .wizard-content.show { display: flex; }
+
+        @media (max-width: 768px) {
+            .wizard-container { flex-direction: column; max-height: 95vh; }
+            .wizard-sidebar { width: 100%; max-height: 180px; }
+            .wizard-video-area { margin: 0 16px; }
+            .wizard-info { padding: 16px; }
+            .wizard-info h2 { font-size: 18px; }
+            .wizard-nav { padding: 12px 16px; }
+            .start-wizard-btn { bottom: 20px; left: 20px; font-size: 13px; padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-right">
+            <div class="logo">
+                <a href="../../index.html" style="display: flex; align-items: center; text-decoration: none;">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="130px" height="35px" viewBox="0 0 235 64.414" enable-background="new 0 0 235 64.414" xml:space="preserve">
+                        <g id="Background_xA0_Image_1_"><g><polygon fill="#02695F" points="49.374,14.641 35.4,31.487 21.798,22.957 5.114,43.178 20.946,17.665 34.882,27.311 46.565,12.442"/><path fill="#038C7F" d="M63.48,3.814l-16.916,8.628L34.882,27.311l-13.936-9.646L5.114,43.178c-1.37-3.402-2.13-7.106-2.13-10.996c0-16.271,13.189-29.461,29.457-29.461c6.316,0,12.166,1.988,16.962,5.375L63.48,3.814z"/><path fill="#344669" d="M59.107,22.341L38.215,44.874L22.038,35.58L6.808,46.73c-0.039-0.059-0.069-0.119-0.105-0.181L22.4,30.487l15.117,10.645L56.421,20.23L59.107,22.341z"/><path fill="#455D8C" d="M67.026,57.925l-9.982,3.984L43.81,59.42c-3.501,1.458-7.333,2.271-11.368,2.271c-10.99,0-20.581-6.031-25.633-14.961l15.23-11.15l16.177,9.294l20.892-22.532L63.48,3.865l-2.445,21.247c0.57,2.283,0.872,4.667,0.872,7.122c0,7.085-2.507,13.58-6.669,18.662l0.073,0.032l-3.499,2.104L67.026,57.925z"/><polygon fill="#344669" points="69.721,56.85 67.026,57.925 51.813,53.032 55.311,50.928 65.258,55.013"/></g></g>
+                        <g id="QOTE"><g><path fill="#404040" d="M78.124,42.693V21.794c0-4.946,1.27-8.574,3.808-10.889s5.943-3.473,10.214-3.473c4.269,0,7.675,1.158,10.215,3.473c2.537,2.315,3.81,5.943,3.81,10.889v20.899c0,4.629-1.103,8.114-3.305,10.447c-2.203,2.341-5.192,3.645-8.967,3.913v5.43c0,0.549-0.168,0.97-0.506,1.271c-0.336,0.297-0.731,0.447-1.18,0.447c-0.495,0-0.909-0.15-1.247-0.447c-0.337-0.301-0.505-0.722-0.505-1.271v-5.43c-3.82-0.269-6.834-1.561-9.034-3.875C79.225,50.863,78.124,47.366,78.124,42.693z M82.574,42.794c0,6.176,2.628,9.56,7.888,10.145v-5.09c0-1.101,0.582-1.651,1.751-1.651c1.124,0,1.686,0.551,1.686,1.651v5.09c5.212-0.63,7.821-4.013,7.821-10.145V21.826c0-6.853-3.19-10.281-9.574-10.281c-6.381,0-9.572,3.428-9.572,10.281V42.794z"/><path fill="#404040" d="M111.964,42.693V21.794c0-4.946,1.271-8.574,3.81-10.889c2.538-2.315,5.946-3.473,10.214-3.473c4.269,0,7.677,1.158,10.215,3.473c2.539,2.315,3.81,5.943,3.81,10.889v20.899c0,4.989-1.271,8.642-3.81,10.956c-2.538,2.315-5.946,3.473-10.215,3.473c-4.268,0-7.676-1.157-10.214-3.473C113.235,51.334,111.964,47.682,111.964,42.693z M116.416,42.693c0,6.875,3.188,10.314,9.572,10.314c6.381,0,9.573-3.439,9.573-10.314V21.794c0-6.832-3.192-10.25-9.573-10.25c-6.385,0-9.572,3.417-9.572,10.25V42.693z"/><path fill="#404040" d="M141.087,9.489c0-0.532,0.147-1.007,0.44-1.428c0.292-0.417,0.706-0.629,1.246-0.629h27.032c0.54,0,0.955,0.199,1.251,0.597c0.288,0.398,0.436,0.864,0.436,1.394c0,0.574-0.147,1.074-0.436,1.492c-0.296,0.42-0.711,0.629-1.251,0.629h-11.257V54.96c0,0.54-0.225,0.968-0.675,1.284c-0.447,0.313-0.967,0.471-1.547,0.471c-0.634,0-1.162-0.158-1.588-0.471c-0.428-0.316-0.639-0.744-0.639-1.284V11.544h-11.327c-0.496,0-0.902-0.197-1.215-0.595C141.247,10.552,141.087,10.064,141.087,9.489z"/><path fill="#404040" d="M174.257,54.96V9.118c0-0.538,0.2-0.955,0.605-1.247c0.406-0.292,0.878-0.438,1.418-0.438h23.999c1.125,0,1.685,0.652,1.685,1.956c0,0.585-0.146,1.09-0.438,1.518c-0.292,0.428-0.706,0.639-1.246,0.639h-21.574v18.54h10.584c0.539,0,0.953,0.193,1.246,0.573c0.293,0.384,0.438,0.866,0.438,1.45c0,1.213-0.56,1.821-1.685,1.821h-10.584v18.672h21.574c0.496,0,0.897,0.203,1.215,0.609c0.313,0.401,0.47,0.897,0.47,1.483c0,1.348-0.56,2.021-1.685,2.021h-23.999c-0.54,0-1.012-0.158-1.418-0.471C174.458,55.931,174.257,55.5,174.257,54.96z"/></g></g>
+                        <g id="it"><g><path fill="#727272" d="M208.659,13.662c-0.578-0.554-0.866-1.208-0.866-1.963c0-0.754,0.288-1.398,0.866-1.93c0.576-0.531,1.287-0.8,2.127-0.8c0.801,0,1.475,0.269,2.031,0.8c0.557,0.532,0.832,1.176,0.832,1.93c0,0.755-0.275,1.409-0.832,1.963c-0.557,0.555-1.23,0.831-2.031,0.831C209.946,14.493,209.235,14.217,208.659,13.662z M208.659,53.551V25.406c0-0.443,0.198-0.82,0.601-1.131c0.398-0.31,0.905-0.466,1.526-0.466c0.622,0,1.146,0.156,1.568,0.466c0.419,0.311,0.63,0.688,0.63,1.131v28.145c0,0.443-0.224,0.845-0.666,1.198c-0.443,0.354-0.955,0.532-1.532,0.532c-0.576,0-1.071-0.179-1.493-0.532C208.87,54.396,208.659,53.995,208.659,53.551z"/><path fill="#727272" d="M217.906,45.515V10.499c0-0.443,0.224-0.818,0.666-1.129c0.443-0.309,0.935-0.465,1.467-0.465c0.576,0,1.084,0.154,1.53,0.462c0.442,0.311,0.662,0.685,0.662,1.127v13.314h8.586c0.442,0,0.808,0.182,1.096,0.543c0.29,0.361,0.436,0.79,0.436,1.288s-0.146,0.925-0.436,1.288c-0.288,0.361-0.653,0.542-1.096,0.542h-8.586v17.95c0,2.155,0.455,3.661,1.365,4.52c0.91,0.856,2.518,1.286,4.824,1.286h1.865c0.576,0,1.051,0.195,1.429,0.585s0.564,0.856,0.564,1.409c0,0.554-0.187,1.032-0.564,1.446c-0.378,0.409-0.853,0.617-1.429,0.617h-1.865C221.411,55.282,217.906,52.024,217.906,45.515z"/></g></g>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li class="active"><a href="../../index.html"><i class="fa-solid fa-house"></i> البداية</a></li>
+                <li><a href="../../quotations.html"><i class="fa-solid fa-file-invoice-dollar"></i> التسعيرات</a></li>
+                <li><a href="#"><i class="fa-solid fa-file-contract"></i> العروض</a></li>
+                <li><a href="../../clients.html"><i class="fa-solid fa-users"></i> العملاء</a></li>
+                <li><a href="#"><i class="fa-solid fa-boxes-stacked"></i> المنتجات</a></li>
+                <li><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i> الإعدادات</a></li>
+            </ul>
+        </div>
+        <div class="nav-left">
+            <div style="font-size: 18px; color: var(--brand-teal); font-weight: 500; cursor: pointer; display: flex; align-items: center; margin-left: 8px;">ع</div>
+            <div class="notifications"><i class="fa-regular fa-bell"></i><span class="badge">165</span></div>
+            <div class="user-profile">
+                <div class="avatar"><img src="https://ui-avatars.com/api/?name=Maya&background=random" alt="user"></div>
+                <span class="username">maya</span>
+            </div>
+            <div class="logout"><i class="fa-solid fa-arrow-right-from-bracket" style="transform: scaleX(-1);"></i></div>
+        </div>
+    </nav>
+
+    <!-- Demo page content -->
+    <main class="dashboard-container">
+        <div class="page-top-bar">
+            <h1 class="page-title">البداية</h1>
+        </div>
+        <div class="demo-page-content">
+            <div class="overview-grid">
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-gray"></div></div><div class="stat-info"><div class="stat-value">0</div><div class="stat-label">مسودة</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-orange"></div></div><div class="stat-info"><div class="stat-value">0</div><div class="stat-label">قيد المراجعة</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-blue"></div></div><div class="stat-info"><div class="stat-value">0</div><div class="stat-label">معتمد داخليا</div></div></div>
+                <div class="stat-card"><div class="stat-chart"><div class="circle circle-purple"></div></div><div class="stat-info"><div class="stat-value">0</div><div class="stat-label">تم الإرسال</div></div></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating trigger button -->
+    <button class="start-wizard-btn" onclick="openWizard()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        ابدأ جولة التعلّم
+    </button>
+
+    <!-- Wizard Overlay -->
+    <div class="wizard-overlay" id="wizardOverlay">
+        <div class="wizard-container">
+            <div class="wizard-sidebar">
+                <div class="wizard-sb-header">
+                    <h3><i class="fa-solid fa-graduation-cap" style="margin-left: 6px;"></i>دروس كوت إت</h3>
+                    <p>مقاطع فيديو تعلّمك كل شيء</p>
+                </div>
+                <div class="wizard-sb-progress">
+                    <div class="wizard-pb-bg"><div class="wizard-pb-fill" id="wizProgressBar" style="width: 0%"></div></div>
+                    <div class="wizard-pb-text" id="wizProgressText">0 من 9 مكتمل</div>
+                </div>
+                <div class="wizard-steps-list" id="wizStepsList"></div>
+            </div>
+            <div class="wizard-main" id="wizardMain">
+                <!-- Welcome screen -->
+                <div class="wizard-welcome" id="wizWelcome">
+                    <div class="welcome-icon"><i class="fa-solid fa-rocket"></i></div>
+                    <h1>مرحبًا بك في كوت إت! 🎉</h1>
+                    <p>سنأخذك في جولة سريعة لتتعلّم كيف تستخدم النظام. كل درس فيديو قصير يشرح ميزة واحدة خطوة بخطوة.</p>
+                    <button class="start-btn" onclick="startWizard()">ابدأ التعلّم <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i></button>
+                </div>
+
+                <!-- Step content (hidden initially) -->
+                <div class="wizard-content" id="wizContent">
+                    <div class="wizard-main-top">
+                        <span class="wizard-step-counter">الخطوة <strong id="wizCurrentStep">1</strong> من <strong>9</strong></span>
+                        <button class="wizard-close" onclick="closeWizard()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="wizard-video-area">
+                        <div class="wiz-play-btn"><i class="fa-solid fa-play" style="margin-right: -4px;"></i></div>
+                    </div>
+                    <div class="wizard-info">
+                        <h2 id="wizTitle">عنوان الدرس</h2>
+                        <p id="wizDesc">وصف الدرس</p>
+                        <div class="wizard-tip" id="wizTip">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span id="wizTipText">نصيحة ستظهر هنا</span>
+                        </div>
+                    </div>
+                    <div class="wizard-nav">
+                        <div style="display:flex; gap:8px;">
+                            <button class="wiz-nav-btn" id="wizPrevBtn" onclick="prevStep()"><i class="fa-solid fa-arrow-right"></i> السابق</button>
+                            <button class="wiz-skip-btn" onclick="skipStep()">تخطي</button>
+                        </div>
+                        <button class="wiz-nav-btn primary" id="wizNextBtn" onclick="nextStep()">التالي <i class="fa-solid fa-arrow-left"></i></button>
+                    </div>
+                </div>
+
+                <!-- Complete screen -->
+                <div class="wizard-complete" id="wizComplete">
+                    <div class="check-circle"><i class="fa-solid fa-check"></i></div>
+                    <h1>أحسنت! أكملت كل الدروس 🎉</h1>
+                    <p>أنت الآن جاهز لاستخدام كوت إت باحتراف. يمكنك العودة لهذه الدروس في أي وقت.</p>
+                    <button class="done-btn" onclick="closeWizard()"><i class="fa-solid fa-rocket" style="margin-left: 6px;"></i> ابدأ الآن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 12px;">
+        كوت إت 2026 ©
+    </div>
+
+    <script>
+        const steps = [
+            { title: 'الإعداد وبدء الاستخدام', desc: 'ابدأ رحلتك مع كوت إت — إعداد الحساب خطوة بخطوة. ستتعلم كيف تُعدّ حسابك وتضبط الإعدادات الأساسية للبدء.', tip: 'هذا أهم درس للمبتدئين — شاهده أولًا قبل أي شيء آخر!', icon: 'fa-rocket' },
+            { title: 'إضافة عميل', desc: 'تعلّم كيف تضيف عميل جديد إلى قائمة العملاء. سنشرح كل الحقول المطلوبة وكيفية حفظ بيانات العميل.', tip: 'يمكنك إضافة بيانات اختيارية مثل رقم الجوال والبريد الإلكتروني لتسهيل التواصل.', icon: 'fa-user-plus' },
+            { title: 'إضافة أكثر عميل عن طريق ملف إكسل', desc: 'استورد عملاءك بالجملة من ملف إكسل بضغطة واحدة. مثالي لنقل بيانات العملاء من نظام قديم.', tip: 'حمّل نموذج الإكسل الجاهز من النظام لضمان تنسيق البيانات بشكل صحيح.', icon: 'fa-file-excel' },
+            { title: 'إضافة منتج', desc: 'أضف منتجاتك وخدماتك مع الأسعار والتفاصيل الكاملة لاستخدامها في عروض الأسعار.', tip: 'أضف صورة للمنتج لتظهر في عروض الأسعار وتجعلها أكثر احترافية.', icon: 'fa-box' },
+            { title: 'إضافة تصنيف', desc: 'نظّم منتجاتك وخدماتك باستخدام التصنيفات المخصصة لتسهيل البحث والفلترة.', tip: 'استخدم تصنيفات واضحة مثل "أجهزة إلكترونية" و"خدمات صيانة" لتنظيم أفضل.', icon: 'fa-tags' },
+            { title: 'إنشاء عرض سعر', desc: 'أنشئ عرض سعر احترافي وأرسله لعميلك مباشرة. تعلّم كيف تضيف المنتجات والخصومات والضرائب.', tip: 'يمكنك معاينة عرض السعر قبل إرساله للتأكد من صحة جميع الأرقام.', icon: 'fa-file-invoice-dollar' },
+            { title: 'إعدادات التحكم في أنواع الضرائب', desc: 'أضف وعدّل أنواع الضرائب (مثل ضريبة القيمة المضافة) المطبّقة على تسعيراتك.', tip: 'يمكنك إضافة أكثر من نوع ضريبة وتطبيقها تلقائيًا على كل عرض سعر جديد.', icon: 'fa-percent' },
+            { title: 'تخصيص الشروط والأحكام', desc: 'خصص الشروط والأحكام التي تظهر في عروض الأسعار لتتوافق مع سياسات شركتك.', tip: 'يمكنك إنشاء قوالب مختلفة للشروط واختيار القالب المناسب لكل عرض سعر.', icon: 'fa-file-contract' },
+            { title: 'إضافة حقول مخصصة', desc: 'أضف حقول إضافية تناسب طبيعة عملك. مثل رقم السجل التجاري أو تاريخ انتهاء العقد.', tip: 'الحقول المخصصة تجعل النظام يتكيّف مع طريقة عملك بدلًا من العكس!', icon: 'fa-sliders' },
+        ];
+
+        let currentStep = -1; // -1 = welcome
+        let completedSteps = new Set();
+
+        function renderStepsList() {
+            const list = document.getElementById('wizStepsList');
+            list.innerHTML = steps.map((s, i) => `
+                <div class="wizard-step-item ${i === currentStep ? 'active' : ''} ${completedSteps.has(i) ? 'completed' : ''}" onclick="goToStep(${i})">
+                    <div class="ws-check">
+                        ${completedSteps.has(i) ? '' : `<span class="ws-check-num">${i+1}</span>`}
+                    </div>
+                    <span class="ws-title">${s.title}</span>
+                </div>
+            `).join('');
+
+            // Update progress
+            const pct = Math.round((completedSteps.size / steps.length) * 100);
+            document.getElementById('wizProgressBar').style.width = pct + '%';
+            document.getElementById('wizProgressText').textContent = `${completedSteps.size} من ${steps.length} مكتمل`;
+        }
+
+        function showStep(idx) {
+            currentStep = idx;
+            const step = steps[idx];
+            document.getElementById('wizCurrentStep').textContent = idx + 1;
+            document.getElementById('wizTitle').textContent = step.title;
+            document.getElementById('wizDesc').textContent = step.desc;
+            document.getElementById('wizTipText').textContent = step.tip;
+
+            document.getElementById('wizWelcome').style.display = 'none';
+            document.getElementById('wizContent').classList.add('show');
+            document.getElementById('wizComplete').classList.remove('show');
+
+            // Nav buttons
+            document.getElementById('wizPrevBtn').style.display = idx === 0 ? 'none' : 'flex';
+            if (idx === steps.length - 1) {
+                document.getElementById('wizNextBtn').innerHTML = 'إنهاء <i class="fa-solid fa-check"></i>';
+                document.getElementById('wizNextBtn').classList.add('success');
+                document.getElementById('wizNextBtn').classList.remove('primary');
+            } else {
+                document.getElementById('wizNextBtn').innerHTML = 'التالي <i class="fa-solid fa-arrow-left"></i>';
+                document.getElementById('wizNextBtn').classList.add('primary');
+                document.getElementById('wizNextBtn').classList.remove('success');
+            }
+
+            renderStepsList();
+        }
+
+        function openWizard() {
+            document.getElementById('wizardOverlay').classList.add('open');
+            if (currentStep === -1) {
+                document.getElementById('wizWelcome').style.display = 'flex';
+                document.getElementById('wizContent').classList.remove('show');
+                document.getElementById('wizComplete').classList.remove('show');
+            }
+            renderStepsList();
+        }
+
+        function closeWizard() {
+            document.getElementById('wizardOverlay').classList.remove('open');
+        }
+
+        function startWizard() {
+            showStep(0);
+        }
+
+        function nextStep() {
+            completedSteps.add(currentStep);
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            } else {
+                // Complete!
+                document.getElementById('wizContent').classList.remove('show');
+                document.getElementById('wizComplete').classList.add('show');
+                renderStepsList();
+                launchConfetti();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) showStep(currentStep - 1);
+        }
+
+        function skipStep() {
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function goToStep(idx) {
+            showStep(idx);
+        }
+
+        function launchConfetti() {
+            const colors = ['#127EE3', '#49B3C9', '#F3A73D', '#009688', '#F1646C', '#8161C2'];
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 1 + 's';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+                piece.style.width = (6 + Math.random() * 8) + 'px';
+                piece.style.height = (6 + Math.random() * 8) + 'px';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 4000);
+            }
+        }
+
+        // Auto-open wizard on load (simulating first-time user)
+        setTimeout(openWizard, 800);
+        renderStepsList();
+    </script>
+</body>
+</html>
