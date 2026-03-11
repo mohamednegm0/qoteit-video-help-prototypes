@@ -100,8 +100,9 @@
 
         .help-categories {
             display: flex;
+            align-items: center; /* Prevents vertical clipping */
             gap: 8px;
-            padding: 12px 16px;
+            padding: 16px 0; /* Removed horizontal padding to fix RTL scroll clip */
             border-bottom: 1px solid var(--border-color);
             overflow-x: auto;
             scrollbar-width: none;
@@ -130,6 +131,9 @@
             justify-content: center;
             height: 40px;
         }
+        /* Fix for RTL scroll padding clipping */
+        .help-cat-btn:first-child { margin-right: 16px; }
+        .help-cat-btn:last-child { margin-left: 16px; }
         .help-cat-btn.active {
             background: #127EE3;
             border-color: #127EE3;
