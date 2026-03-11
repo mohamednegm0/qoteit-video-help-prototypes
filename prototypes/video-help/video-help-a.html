@@ -109,14 +109,14 @@
         }
         .help-categories::-webkit-scrollbar { display: none; }
         .help-cat-btn {
-            padding: 6px 16px;
+            padding: 8px 18px;
             border-radius: 20px;
             border: 1.5px solid var(--border-color);
             background: var(--bg-card);
             font-family: 'Noto Sans Arabic', sans-serif;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
-            line-height: 1.4;
+            line-height: 1;
             color: var(--text-secondary);
             cursor: pointer;
             white-space: nowrap;
@@ -124,6 +124,11 @@
             transition: all 0.2s;
             -webkit-appearance: none;
             appearance: none;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
         }
         .help-cat-btn.active {
             background: #127EE3;
