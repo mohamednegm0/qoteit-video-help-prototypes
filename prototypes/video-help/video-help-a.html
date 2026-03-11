@@ -104,20 +104,33 @@
             padding: 10px 16px;
             border-bottom: 1px solid var(--border-color);
             overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .help-categories::-webkit-scrollbar { display: none; }
         .help-cat-btn {
-            padding: 5px 14px;
+            padding: 6px 16px;
             border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            font-family: inherit;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-card);
+            font-family: 'Noto Sans Arabic', sans-serif;
             font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
             color: var(--text-secondary);
             cursor: pointer;
             white-space: nowrap;
+            flex-shrink: 0;
             transition: all 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
         }
-        .help-cat-btn.active, .help-cat-btn:hover {
+        .help-cat-btn.active {
+            background: #127EE3;
+            border-color: #127EE3;
+            color: #fff;
+        }
+        .help-cat-btn:hover:not(.active) {
             background: #E6F0FF;
             border-color: #B3D4FF;
             color: #127EE3;
