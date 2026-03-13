@@ -214,6 +214,27 @@
         }
         .proto-open-btn:hover { background: #0d6bd0; }
 
+        .proto-story-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 8px;
+            background: #F4F6F9;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .proto-story-btn:hover { background: #E2E8F0; color: var(--text-primary); }
+
         /* Recommendation banner */
         .proto-rec-banner {
             max-width: 1100px;
@@ -298,11 +319,32 @@
 
     <!-- Recommendation Banner -->
     <div class="proto-grid-container" style="padding-bottom: 0;">
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 24px;">💡 التوصيات المدمجة للمنتج (مع قصص المستخدم)</h2>
+        
         <div class="rec-card">
             <div class="rec-icon"><i class="fa-solid fa-star"></i></div>
             <div class="rec-content">
-                <h3>💡 التوصية: اجمع بين A + E</h3>
-                <p>استخدم <strong>معالج التعلّم (E)</strong> للمستخدمين الجدد عند أول استخدام، ثم <strong>الويدجت العائم (A)</strong> كمساعد دائم. أضف <strong>مركز المساعدة (B)</strong> كصفحة مستقلة لاحقًا.</p>
+                <h3>التوصية 1: المعالج الترحيبي + الويدجت العائم (الأفضل للـ B2B)</h3>
+                <p>استخدم <strong>معالج التعلّم (E)</strong> للمستخدمين الجدد عند أول دخول، ثم <strong>الويدجت العائم (A)</strong> كمساعد دائم لاحقاً.</p>
+                <a href="stories/story-ae.html" class="proto-story-btn" style="display:inline-flex; width:auto; padding:8px 16px; margin-top:12px; background:#fff;"><i class="fa-solid fa-file-signature"></i> قراءة قصة المستخدم البرمجية</a>
+            </div>
+        </div>
+
+        <div class="rec-card" style="background: #F8FAFC; border-color: #E2E8F0;">
+            <div class="rec-icon" style="background:#49B3C9;"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div class="rec-content">
+                <h3>التوصية 2: مركز المساعدة الشامل للويب + القصص للجوال</h3>
+                <p>إتاحة <strong>مركز المساعدة (B)</strong> للويب بكل تفاصيله، مع واجهة <strong>القصص التفاعلية (F)</strong> لتطبيق الموبايل لسهولة الاستخدام.</p>
+                <a href="stories/story-bf.html" class="proto-story-btn" style="display:inline-flex; width:auto; padding:8px 16px; margin-top:12px; background:#fff;"><i class="fa-solid fa-file-signature"></i> قراءة قصة المستخدم البرمجية</a>
+            </div>
+        </div>
+
+        <div class="rec-card" style="background: #F8FAFC; border-color: #E2E8F0;">
+            <div class="rec-icon" style="background:#8161C2;"><i class="fa-solid fa-bolt"></i></div>
+            <div class="rec-content">
+                <h3>التوصية 3: إمكانية الوصول السريع (لوحة أوامر)</h3>
+                <p>إضافة <strong>لوحة الأوامر (D)</strong> كاختصار للمحترفين إلى جانب الويدجت العائم والمعالج.</p>
+                <a href="stories/story-ade.html" class="proto-story-btn" style="display:inline-flex; width:auto; padding:8px 16px; margin-top:12px; background:#fff;"><i class="fa-solid fa-file-signature"></i> قراءة قصة المستخدم البرمجية</a>
             </div>
         </div>
     </div>
@@ -332,6 +374,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-a.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-a.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -352,6 +395,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-b.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-b.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -372,6 +416,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-c.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-c.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -392,6 +437,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-d.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-d.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -412,6 +458,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-e.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-e.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -432,6 +479,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-f.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-f.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
@@ -452,6 +500,7 @@
                 </div>
                 <div class="proto-card-footer">
                     <a href="video-help-g.html" class="proto-open-btn"><i class="fa-solid fa-external-link-alt"></i> تجربة النموذج</a>
+                    <a href="stories/story-g.html" class="proto-story-btn"><i class="fa-solid fa-file-signature"></i> قصة المستخدم (للمطورين)</a>
                 </div>
             </div>
 
